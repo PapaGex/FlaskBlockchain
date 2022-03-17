@@ -1,7 +1,11 @@
 import datetime
 import hashlib
 import json
-from flask import Flask,jsonify
+
+import blockchain as blockchain
+from flask import Flask, jsonify
+
+app = Flask(__name__)
 
 class Blockchain:
 
@@ -54,6 +58,31 @@ class Blockchain:
             previous_block = block
             block_index += 1
         return True
+
+bloodlines = Blockchain()
+
+@app.route('/mine_sanguine', methods = ['GET'])
+def mine_sanguine():
+    previous_block = blockchain.get_previous_block()
+    previous_proof = previous_block['proof']
+    proof = blockchain.proof_of_work(previous_proof)
+    previous_hash = blockchain.hash(previous_block)
+    block = blockchain.create_block(proof, previous_hash)
+    response = {'message': 'Huzzah!!! You have lengthened the lineage of bloodlines!!!!',
+                'index': block['index'],
+                'timestamp': block['timestamp'],
+                'proof': block['proof'],
+                'previous_hash': block['previous_hash']}
+    return jsonify(response), 200
+
+@app.route('/exquisite_corpse', methods = ['GET'])
+def exquisite_corpse():
+    response = {'chain': bloodlines.chain,
+                'length': len(bloodlines.chain)}
+    return jsonify(response), 200
+
+
+
 
 
 
